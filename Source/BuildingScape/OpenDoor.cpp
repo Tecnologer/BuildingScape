@@ -28,19 +28,17 @@ void UOpenDoor::BeginPlay()
 void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	FRotator CurrentRotation = GetOwner()->GetActorRotation();	
 	
-	auto Alpha = 0.05f;
-	UE_LOG(LogTemp, Warning, TEXT("Current Yaw: %f"), CurrentRotation.Yaw);
-	//float Interpolation = FMath::Lerp(CurrentRotation.Yaw, TargetYaw, Alpha);
-	float Interpolation = FMath::FInterpConstantTo(CurrentRotation.Yaw, TargetYaw, DeltaTime, 45);
+	if (PressurePlate->IsOverlappingActor(ActorThatOpen)) {
+		OpenDoor(DeltaTime);
+	}
+}
 
-	UE_LOG(LogTemp, Warning, TEXT("Interpolation: %d"), Interpolation);
-	//CurrentRotation = GetOwner()->GetActorRotation();
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *CurrentRotation.ToString());
+void UOpenDoor::OpenDoor(const float DeltaTime) const {
+	FRotator CurrentRotation = GetOwner()->GetActorRotation();
+	float Interpolation = FMath::FInterpConstantTo(CurrentRotation.Yaw, TargetYaw, DeltaTime, 45);
 	CurrentRotation.Yaw = Interpolation;
-	// ...
-	
 	GetOwner()->SetActorRotation(CurrentRotation);
+
 }
 
