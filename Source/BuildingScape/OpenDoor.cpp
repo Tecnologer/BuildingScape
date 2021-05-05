@@ -25,6 +25,10 @@ void UOpenDoor::BeginPlay()
 	if (!ActorThatOpen) {
 		ActorThatOpen = GetWorld()->GetFirstPlayerController()->GetPawn();
 	}
+
+	/*if (!PressurePlate) {
+		PressurePlate = GetWorld()->Tri
+	}*/
 }
 
 
@@ -35,10 +39,12 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	
 	if (PressurePlate && PressurePlate->IsOverlappingActor(ActorThatOpen)) {
 		OpenDoor(DeltaTime);
+		DoorLastOpened = GetWorld()->GetTimeSeconds();
 	}
-	else  {
+	else if((GetWorld()->GetTimeSeconds() - DoorLastOpened) >= DoorCloseDelay) {
+		
 		CloseDoor(DeltaTime);
-	}
+	}	
 }
 
 void UOpenDoor::OpenDoor(const float DeltaTime) const {
