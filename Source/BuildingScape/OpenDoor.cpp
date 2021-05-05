@@ -26,9 +26,8 @@ void UOpenDoor::BeginPlay()
 		ActorThatOpen = GetWorld()->GetFirstPlayerController()->GetPawn();
 	}
 
-	/*if (!PressurePlate) {
-		PressurePlate = GetWorld()->Tri
-	}*/
+	CloseInterpSpeed = OpenDoorAngle / DoorCloseSpeed;
+	OpenInterpSpeed = OpenDoorAngle / DoorOpenSpeed;
 }
 
 
@@ -49,14 +48,14 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 
 void UOpenDoor::OpenDoor(const float DeltaTime) const {
 	FRotator CurrentRotation = GetOwner()->GetActorRotation();
-	float Interpolation = FMath::FInterpConstantTo(CurrentRotation.Yaw, TargetYaw, DeltaTime, 70);
+	float Interpolation = FMath::FInterpConstantTo(CurrentRotation.Yaw, OpenDoorAngle, DeltaTime, OpenInterpSpeed);
 	CurrentRotation.Yaw = Interpolation;
 	GetOwner()->SetActorRotation(CurrentRotation);
 }
 
 void UOpenDoor::CloseDoor(const float DeltaTime) const {
 	FRotator CurrentRotation = GetOwner()->GetActorRotation();
-	float Interpolation = FMath::FInterpConstantTo(CurrentRotation.Yaw, InitialYaw, DeltaTime, 95);
+	float Interpolation = FMath::FInterpConstantTo(CurrentRotation.Yaw, InitialDoorAngle, DeltaTime, CloseInterpSpeed);
 	CurrentRotation.Yaw = Interpolation;
 	GetOwner()->SetActorRotation(CurrentRotation);
 }

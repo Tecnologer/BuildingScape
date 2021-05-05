@@ -28,19 +28,35 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
+	/**The angle to consider door opened*/
 	UPROPERTY(EditAnywhere)
-	float TargetYaw = 90.f;
+	float OpenDoorAngle = 90.f;
 	
+	/**Initial door angle, 0 if it's closed*/
 	UPROPERTY(EditAnywhere)
-	float InitialYaw = 0.f;
+	float InitialDoorAngle = 0.f;
 	
+	/**Instance of the trigger base to open the door*/
 	UPROPERTY(EditAnywhere)
 	ATriggerVolume* PressurePlate;
-
+	
+	/**Instance of the actor that will be trigger open the door*/
 	UPROPERTY(EditAnywhere)
-	AActor* ActorThatOpen;
-
-	float DoorLastOpened = 0.f;
+	AActor* ActorThatOpen;	
+	
+	/**Time in seconds to wait before start closing the door*/
 	UPROPERTY(EditAnywhere)
 	float DoorCloseDelay = .5f;
+	
+	/**Door open animation duration in seconds*/
+	UPROPERTY(EditAnywhere)
+	float DoorOpenSpeed = 1.2;
+	
+	/**Door close animation duration in seconds*/
+	UPROPERTY(EditAnywhere)
+	float DoorCloseSpeed= 1.2;
+
+	float DoorLastOpened = 0.f;
+	float OpenInterpSpeed = 0.f;
+	float CloseInterpSpeed = 0.f;
 };
