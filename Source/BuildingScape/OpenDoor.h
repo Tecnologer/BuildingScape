@@ -32,6 +32,9 @@ private:
 	float TargetYaw = 90.f;
 	
 	UPROPERTY(EditAnywhere)
+	float InitialYaw = 0.f;
+	
+	UPROPERTY(EditAnywhere)
 	ATriggerVolume* PressurePlate;
 
 	UPROPERTY(EditAnywhere)
