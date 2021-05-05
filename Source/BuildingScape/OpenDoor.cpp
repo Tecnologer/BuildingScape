@@ -1,6 +1,8 @@
 // copyright tecnologer
 
 
+#include "Engine/World.h"
+#include "GameFramework/PlayerController.h"
 #include "OpenDoor.h"
 #include "GameFramework/Actor.h"
 
@@ -20,7 +22,9 @@ void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	if (!ActorThatOpen) {
+		ActorThatOpen = GetWorld()->GetFirstPlayerController()->GetPawn();
+	}
 }
 
 
@@ -32,11 +36,21 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	if (PressurePlate && PressurePlate->IsOverlappingActor(ActorThatOpen)) {
 		OpenDoor(DeltaTime);
 	}
+	else if (!PressurePlate || !PressurePlate->IsOverlappingActor(ActorThatOpen)) {
+		CloseDoor(DeltaTime);
+	}
 }
 
 void UOpenDoor::OpenDoor(const float DeltaTime) const {
 	FRotator CurrentRotation = GetOwner()->GetActorRotation();
-	float Interpolation = FMath::FInterpConstantTo(CurrentRotation.Yaw, TargetYaw, DeltaTime, 45);
+	float Interpolation = FMath::FInterpConstantTo(CurrentRotation.Yaw, TargetYaw, DeltaTime, 70);
+	CurrentRotation.Yaw = Interpolation;
+	GetOwner()->SetActorRotation(CurrentRotation);
+}
+
+void UOpenDoor::CloseDoor(const float DeltaTime) const {
+	FRotator CurrentRotation = GetOwner()->GetActorRotation();
+	float Interpolation = FMath::FInterpConstantTo(CurrentRotation.Yaw, 0, DeltaTime, 70);
 	CurrentRotation.Yaw = Interpolation;
 	GetOwner()->SetActorRotation(CurrentRotation);
 }

@@ -21,6 +21,7 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	void OpenDoor(const float DeltaTime) const;
+	void CloseDoor(const float DeltaTime) const;
 
 public:	
 	// Called every frame
