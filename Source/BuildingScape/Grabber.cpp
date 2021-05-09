@@ -28,8 +28,24 @@ void UGrabber::BeginPlay()
 	if (!PhysicsHandle) {
 		UE_LOG(LogTemp, Error, TEXT("No physics handle component found on %s!"), *GetOwner()->GetName());
 	}
+
+	//check for input handle component
+	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
+	if (InputComponent) {
+		UE_LOG(LogTemp, Warning, TEXT("Input handle component found named %s!"), *InputComponent->GetName());
+		InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
+		InputComponent->BindAction("Grab", IE_Released, this, &UGrabber::Release);
+	}
 }
 
+void UGrabber::Grab() 
+{
+	UE_LOG(LogTemp, Warning, TEXT("Grabber press"));
+}
+void UGrabber::Release() 
+{
+	UE_LOG(LogTemp, Warning, TEXT("Grabber release"));
+}
 
 // Called every frame
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
