@@ -8,7 +8,7 @@
 #include "Components/InputComponent.h"
 #include "Grabber.generated.h"
 
-struct FGrabberLocation{
+struct FGrabberReachPosition{
 	FVector PlayerViewPointLocation;
 	FRotator PlayerViewPointRotation;
 	FVector LineTraceEnd;
@@ -43,5 +43,6 @@ private:
 	//return the first actor whithin reach with physics body
 	FHitResult GetFirstPhysicsBodyInReach() const;
 
-	FGrabberLocation GetGrabberLocation() const;
+	//Return the line trace end and position in the world
+	FGrabberReachPosition GetGrabberReachPosition() const;
 };

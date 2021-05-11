@@ -5,7 +5,9 @@
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/Actor.h"
+#include "Components/PrimitiveComponent.h"
 
+#define OUT
 // Sets default values for this component's properties
 UOpenDoor::UOpenDoor()
 {
@@ -36,7 +38,7 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
-	if (PressurePlate && PressurePlate->IsOverlappingActor(ActorThatOpen)) {
+	if (TotalMassOfActors() > MassToOpenDoor) {
 		OpenDoor(DeltaTime);
 		DoorLastOpened = GetWorld()->GetTimeSeconds();
 	}
@@ -60,3 +62,20 @@ void UOpenDoor::CloseDoor(const float DeltaTime) const {
 	GetOwner()->SetActorRotation(CurrentRotation);
 }
 
+float UOpenDoor::TotalMassOfActors() const{
+	float TotalMass = 0.f;
+	/*PressurePlate && PressurePlate->IsOverlappingActor(ActorThatOpen)*/
+	
+	//Find all overlaping actors
+	TArray<AActor *> OverlapingActors;
+	PressurePlate->GetOverlappingActors(OUT OverlapingActors);
+	
+	//Add up their masses
+	for (AActor* Actor : OverlapingActors){
+		TotalMass += Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
+		UE_LOG(LogTemp, Warning, TEXT("%s is on the pressureplate!"), *Actor->GetName());
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Total Mass: %f"), TotalMass);
+	return TotalMass;
+}

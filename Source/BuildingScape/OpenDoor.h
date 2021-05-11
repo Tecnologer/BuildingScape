@@ -22,6 +22,7 @@ protected:
 	virtual void BeginPlay() override;
 	void OpenDoor(const float DeltaTime) const;
 	void CloseDoor(const float DeltaTime) const;
+	float TotalMassOfActors() const;
 
 public:	
 	// Called every frame
@@ -55,6 +56,10 @@ private:
 	/**Door close animation duration in seconds*/
 	UPROPERTY(EditAnywhere)
 	float DoorCloseSpeed= 1.2;
+
+	/**Minimum of mass to open the door*/
+	UPROPERTY(EditAnywhere)
+	float MassToOpenDoor = 50.f;
 
 	float DoorLastOpened = 0.f;
 	float OpenInterpSpeed = 0.f;

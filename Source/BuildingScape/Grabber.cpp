@@ -30,7 +30,7 @@ void UGrabber::BeginPlay()
 
 void UGrabber::FindPhysicsHandle() {
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	if (!PhysicsHandle) {
+	if (PhysicsHandle == nullptr) {
 		UE_LOG(LogTemp, Error, TEXT("No physics handle component found on %s!"), *GetOwner()->GetName());
 	}
 
@@ -53,18 +53,19 @@ void UGrabber::Grab()
 	FHitResult Hit = GetFirstPhysicsBodyInReach();
 
 	// get player viewpoint
-	FGrabberLocation GrabberLocation = GetGrabberLocation();
+	FGrabberReachPosition GrabberLocation = GetGrabberReachPosition();
 	UPrimitiveComponent *ComponentToGrab = Hit.GetComponent();
 
 	if(Hit.GetActor()){
 		PhysicsHandle->GrabComponentAtLocation(
 			ComponentToGrab,
 			NAME_None,
-			GrabberLocation.LineTraceEnd);
+			GrabberLocation.LineTraceEnd
+		);
 	}
 	// if we hit something then attach the physics handle
 
-	//TODO: attacja physics handle
+	//TODO: attach a physics handle
 }
 
 void UGrabber::Release() 
@@ -83,7 +84,7 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		//move the object we're holding
 	if(PhysicsHandle->GrabbedComponent){
 		// get player viewpoint
-		FGrabberLocation GrabberLocation = GetGrabberLocation();
+		FGrabberReachPosition GrabberLocation = GetGrabberReachPosition();
 
 		PhysicsHandle->SetTargetLocation(GrabberLocation.LineTraceEnd);
 	}
@@ -95,7 +96,7 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 
 FHitResult UGrabber::GetFirstPhysicsBodyInReach() const {
 	// draw a line from player showing the reach (DEBUG)
-	FGrabberLocation GrabberLocation = GetGrabberLocation();
+	FGrabberReachPosition GrabberLocation = GetGrabberReachPosition();
 
 	// ray-cast out to certain distance (reach)
 	FHitResult Hit;
@@ -106,18 +107,21 @@ FHitResult UGrabber::GetFirstPhysicsBodyInReach() const {
 		GrabberLocation.PlayerViewPointLocation,
 		GrabberLocation.LineTraceEnd,
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
-		TraceParams);
+		TraceParams
+	);
 
 	return Hit;
 }
 
-FGrabberLocation UGrabber::GetGrabberLocation() const {
-	FGrabberLocation GrabberLocation;
+FGrabberReachPosition UGrabber::GetGrabberReachPosition() const {
+	FGrabberReachPosition GrabberLocation;
 	// get player viewpoint
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT GrabberLocation.PlayerViewPointLocation, OUT GrabberLocation.PlayerViewPointRotation);
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
+		OUT GrabberLocation.PlayerViewPointLocation, 
+		OUT GrabberLocation.PlayerViewPointRotation
+	);
 	//UE_LOG(LogTemp, Warning, TEXT("Location: %s, Rotation: %s"), *PlayerViewpointLocation.ToString(), *PlayerViewpointRotation.ToString());
 
-	// draw a line from player showing the reach (DEBUG)
 	GrabberLocation.LineTraceEnd = GrabberLocation.PlayerViewPointLocation + GrabberLocation.PlayerViewPointRotation.Vector() * Reach;
 
 	return GrabberLocation;
