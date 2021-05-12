@@ -39,11 +39,7 @@ private:
 	
 	/**Instance of the trigger base to open the door*/
 	UPROPERTY(EditAnywhere)
-	ATriggerVolume* PressurePlate;
-	
-	/**Instance of the actor that will be trigger open the door*/
-	UPROPERTY(EditAnywhere)
-	AActor* ActorThatOpen;	
+	ATriggerVolume* PressurePlate = nullptr;
 	
 	/**Time in seconds to wait before start closing the door*/
 	UPROPERTY(EditAnywhere)

@@ -30,7 +30,7 @@ void UGrabber::BeginPlay()
 
 void UGrabber::FindPhysicsHandle() {
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	if (PhysicsHandle == nullptr) {
+	if (!PhysicsHandle) {
 		UE_LOG(LogTemp, Error, TEXT("No physics handle component found on %s!"), *GetOwner()->GetName());
 	}
 
@@ -47,6 +47,9 @@ void UGrabber::SetupInputComponent() {
 
 void UGrabber::Grab() 
 {
+	if (!PhysicsHandle)
+		return;
+	
 	UE_LOG(LogTemp, Warning, TEXT("Grabber press"));
 	//TODO: to only raycast when key is presed and see if we reach any actors with physics body collision channel set
 
@@ -55,21 +58,27 @@ void UGrabber::Grab()
 	// get player viewpoint
 	FGrabberReachPosition GrabberLocation = GetGrabberReachPosition();
 	UPrimitiveComponent *ComponentToGrab = Hit.GetComponent();
-
-	if(Hit.GetActor()){
-		PhysicsHandle->GrabComponentAtLocation(
-			ComponentToGrab,
-			NAME_None,
-			GrabberLocation.LineTraceEnd
-		);
+	AActor *ActorHit = Hit.GetActor();
+	
+	if (ActorHit)
+	{
+		PhysicsHandle
+			->GrabComponentAtLocation(
+				ComponentToGrab,
+				NAME_None,
+				GrabberLocation.LineTraceEnd
+			);
 	}
 	// if we hit something then attach the physics handle
 
 	//TODO: attach a physics handle
 }
 
-void UGrabber::Release() 
+void UGrabber::Release()
 {
+	if (!PhysicsHandle)
+		return;
+
 	UE_LOG(LogTemp, Warning, TEXT("Grabber release"));
 	//TODO: remove/release the physics handle
 	PhysicsHandle->ReleaseComponent();
@@ -82,7 +91,8 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 
 	//if the physic handle is attach
 		//move the object we're holding
-	if(PhysicsHandle->GrabbedComponent){
+	if (PhysicsHandle && PhysicsHandle->GrabbedComponent)
+	{
 		// get player viewpoint
 		FGrabberReachPosition GrabberLocation = GetGrabberReachPosition();
 
@@ -102,14 +112,15 @@ FHitResult UGrabber::GetFirstPhysicsBodyInReach() const {
 	FHitResult Hit;
 	FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
 
-	GetWorld()->LineTraceSingleByObjectType(
-		OUT Hit,
-		GrabberLocation.PlayerViewPointLocation,
-		GrabberLocation.LineTraceEnd,
-		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
-		TraceParams
-	);
-
+	GetWorld()
+		->LineTraceSingleByObjectType(
+			OUT Hit,
+			GrabberLocation.PlayerViewPointLocation,
+			GrabberLocation.LineTraceEnd,
+			FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
+			TraceParams
+		);
+		
 	return Hit;
 }
 

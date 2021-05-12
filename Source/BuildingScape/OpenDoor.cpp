@@ -24,10 +24,6 @@ void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!ActorThatOpen) {
-		ActorThatOpen = GetWorld()->GetFirstPlayerController()->GetPawn();
-	}
-
 	CloseInterpSpeed = OpenDoorAngle / DoorCloseSpeed;
 	OpenInterpSpeed = OpenDoorAngle / DoorOpenSpeed;
 }
@@ -64,7 +60,9 @@ void UOpenDoor::CloseDoor(const float DeltaTime) const {
 
 float UOpenDoor::TotalMassOfActors() const{
 	float TotalMass = 0.f;
-	/*PressurePlate && PressurePlate->IsOverlappingActor(ActorThatOpen)*/
+	if(!PressurePlate){
+		return TotalMass;
+	}
 	
 	//Find all overlaping actors
 	TArray<AActor *> OverlapingActors;
