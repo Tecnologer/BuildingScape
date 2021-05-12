@@ -20,13 +20,15 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-	void OpenDoor(const float DeltaTime) const;
-	void CloseDoor(const float DeltaTime) const;
+	void OpenDoor(const float DeltaTime);
+	void CloseDoor(const float DeltaTime);
 	float TotalMassOfActors() const;
 
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	void FindAudioComponent();
+	void FindPressurePlate();
 
 private:
 	/**The angle to consider door opened*/
@@ -57,7 +59,15 @@ private:
 	UPROPERTY(EditAnywhere)
 	float MassToOpenDoor = 50.f;
 
+	/**Audio component for the door sounds*/
+	UPROPERTY(EditAnywhere)
+	UAudioComponent *AudioComponent = nullptr;
+
 	float DoorLastOpened = 0.f;
 	float OpenInterpSpeed = 0.f;
 	float CloseInterpSpeed = 0.f;
+
+	//tracks when the sound has played
+	bool OpenDoorSound = false;
+	bool CloseDoorSound = true;
 };
